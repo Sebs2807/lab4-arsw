@@ -12,8 +12,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+
+
+import io.swagger.v3.oas.annotations.Operation;
+//import io.swagger.v3.oas.annotations.responses.ApiResponse as SwaggerApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+/** 
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+*/
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Set;
+
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/v1/blueprints")
@@ -24,6 +41,15 @@ public class BlueprintsAPIController {
     public BlueprintsAPIController(BlueprintsServices services) { this.services = services; }
 
     // GET /api/v1/blueprints
+    @Operation(
+        summary = "Obtener todos los blueprints",
+        description = "Este endpoint devuelve un conjunto de todos los blueprints disponibles."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+    responseCode = "200",
+    description = "Lista de blueprints",
+    content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
     @GetMapping
     public ResponseEntity<ApiResponse<Set<Blueprint>>> getAll() {
         return ResponseEntity.ok(new ApiResponse<>(200, "OK", services.getAllBlueprints()));
@@ -31,6 +57,17 @@ public class BlueprintsAPIController {
 
     // GET /api/v1/blueprints/{author}
     @GetMapping("/{author}")
+    @Operation(summary = "Obtiene los blueprints de un autor específico")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "Blueprints encontrados",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "No se encontraron blueprints para el autor",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
     public ResponseEntity<ApiResponse<?>> byAuthor(@PathVariable String author) {
         try {
             return ResponseEntity.ok(new ApiResponse<>(200, "OK", services.getBlueprintsByAuthor(author)));
@@ -41,6 +78,17 @@ public class BlueprintsAPIController {
 
     // GET /api/v1/blueprints/{author}/{bpname}
     @GetMapping("/{author}/{bpname}")
+    @Operation(summary = "Obtiene un blueprint específico por autor y nombre")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "200",
+        description = "Blueprint encontrado",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "No se encontró el blueprint",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
     public ResponseEntity<ApiResponse<?>> byAuthorAndName(@PathVariable String author, @PathVariable String bpname) {
         try {
             return ResponseEntity.ok(new ApiResponse<>(200, "OK",services.getBlueprint(author, bpname)));
@@ -51,6 +99,17 @@ public class BlueprintsAPIController {
 
     // POST /api/v1/blueprints
     @PostMapping
+    @Operation(summary = "Crea un nuevo blueprint")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "201",
+        description = "Blueprint creado",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "400",
+        description = "Error al guardar el blueprint",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
     public ResponseEntity<ApiResponse<?>> add(@Valid @RequestBody NewBlueprintRequest req) {
         try {
             Blueprint bp = new Blueprint(req.author(), req.name(), req.points());
@@ -63,6 +122,17 @@ public class BlueprintsAPIController {
 
     // PUT /api/v1/blueprints/{author}/{bpname}/points
     @PutMapping("/{author}/{bpname}/points")
+    @Operation(summary = "Agrega un punto a un blueprint existente")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "202",
+        description = "Punto agregado correctamente",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        responseCode = "404",
+        description = "Blueprint no encontrado",
+        content = @Content(schema = @Schema(implementation = Blueprint.class))
+    )
     public ResponseEntity<ApiResponse<?>> addPoint(@PathVariable String author, @PathVariable String bpname,@RequestBody Point p) {
         try {
             services.addPoint(author, bpname, p.x(), p.y());
