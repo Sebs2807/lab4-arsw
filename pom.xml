@@ -13,7 +13,7 @@
   <groupId>edu.eci.arsw</groupId>
   <artifactId>SpringBoot_REST_API_Blueprints</artifactId>
   <version>1.0.0</version>
-  <name>SpringBoot_REST_API_Blueprints</name>
+  <name>springboot-rest-api-blueprints</name>
   <description>ARSW Lab #4 Blueprints — Java 21 / Spring Boot 3.3.x, 1:1 endpoints behavior</description>
 
   <properties>
@@ -41,6 +41,10 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
@@ -53,14 +57,23 @@
           <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
       </plugin>
+
+      <!-- Spring Boot Plugin with image name configuration -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.3.9</version>
+        <configuration>
+          <image>
+            <name>springboot-rest-api-blueprints</name>
+          </image>
+        </configuration>
       </plugin>
     </plugins>
   </build>
